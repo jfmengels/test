@@ -1,7 +1,7 @@
 module Test exposing
     ( Test, test, testWithKey
     , describe, concat, todo, skip, only
-    , fuzz, fuzz2, fuzz3, fuzzWith, FuzzOptions
+    , fuzz, fuzz2, fuzz3, fuzzWithKey, fuzzWith, FuzzOptions
     , Distribution, noDistribution, reportDistribution, expectDistribution
     )
 
@@ -17,7 +17,7 @@ module Test exposing
 
 ## Fuzz Testing
 
-@docs fuzz, fuzz2, fuzz3, fuzzWith, FuzzOptions
+@docs fuzz, fuzz2, fuzz3, fuzzWithKey, fuzzWith, FuzzOptions
 @docs Distribution, noDistribution, reportDistribution, expectDistribution
 
 -}
@@ -456,6 +456,27 @@ fuzz :
     -> Test
 fuzz =
     Test.Fuzz.fuzzTest Test.Distribution.Internal.NoDistributionNeeded
+
+
+{-| Run a [fuzz test](#fuzz) using a [`Browser.Navigation.Key`](https://package.elm-lang.org/packages/elm/browser/latest/Browser-Navigation#Key) and a random input.
+
+You might need such a key if you're testing functions where a key is contained in the arguments.
+This might be the case when using [`Browser.application`](https://package.elm-lang.org/packages/elm/browser/latest/Browser#application)
+and storing the key in the `Model`.
+If you do not need the key, use [`fuzz`](#fuzz) instead.
+
+-}
+fuzzWithKey :
+    Fuzzer a
+    -> String
+    -> (Browser.Navigation.Key -> a -> Expectation)
+    -> Test
+fuzzWithKey fuzzer untrimmedDesc getExpectation =
+    Test.Fuzz.fuzzTest
+        Test.Distribution.Internal.NoDistributionNeeded
+        fuzzer
+        untrimmedDesc
+        (getExpectation testNavigationKey)
 
 
 {-| Run a [fuzz test](#fuzz) using two random inputs.
