@@ -34,7 +34,7 @@ all =
 
                             else
                                 Expect.fail ("Expected a run count of " ++ String.fromInt runs ++ " to be invalid, but was valid with this value: " ++ Debug.toString val)
-            , test "an only inside another only has no effect" <|
+            , test "an only inside another only should ignore the non-only siblings" <|
                 \_ ->
                     let
                         suite =
@@ -51,9 +51,43 @@ all =
                         Only runners ->
                             runners
                                 |> List.map (.labels >> List.reverse)
+                                |> Expect.equal [ [ "three tests", "two tests", "is an only" ] ]
+
+                        val ->
+                            Expect.fail ("Expected SeededRunner to be Only, but was " ++ Debug.toString val)
+            , test "should keep all only tests spread among siblings" <|
+                \_ ->
+                    let
+                        suite =
+                            describe "root"
+                                [ test "A" expectPass
+                                , describe "B"
+                                    [ Test.only (test "1" testImpl)
+                                    ]
+                                , Test.only <|
+                                    describe "C"
+                                        [ test "1" testImpl
+                                        , Test.only (test "2" testImpl)
+                                        , describe "3"
+                                            [ test "X" testImpl
+                                            , Test.only (test "Y" testImpl)
+                                            , test "Z" testImpl
+                                            ]
+                                        ]
+                                , describe "D"
+                                    [ Test.only (test "1" testImpl)
+                                    ]
+                                ]
+                    in
+                    case toSeededRunners suite of
+                        Only runners ->
+                            runners
+                                |> List.map (.labels >> List.reverse)
                                 |> Expect.equal
-                                    [ [ "three tests", "two tests", "fails" ]
-                                    , [ "three tests", "two tests", "is an only" ]
+                                    [ [ "root", "B", "1" ]
+                                    , [ "root", "C", "2" ]
+                                    , [ "root", "C", "3", "Y" ]
+                                    , [ "root", "D", "1" ]
                                     ]
 
                         val ->
@@ -180,7 +214,7 @@ all =
                                 |> Expect.equal
                                     (Just
                                         { given = Nothing
-                                        , description = "This test failed because it threw an exception: \"Error: TODO in module `RunnerTests` on line 174\n\ncrash\""
+                                        , description = "This test failed because it threw an exception: \"Error: TODO in module `RunnerTests` on line 208\n\ncrash\""
                                         , reason = Test.Runner.Failure.Custom
                                         }
                                     )
