@@ -9,19 +9,13 @@ import Test.Runner exposing (SeededRunners(..))
 import Test.Runner.Failure
 
 
-all : Test
-all =
-    Test.concat
-        [ fromTest ]
-
-
 toSeededRunners : Test -> SeededRunners
 toSeededRunners =
     Test.Runner.fromTest 5 (Random.initialSeed 42)
 
 
-fromTest : Test
-fromTest =
+all : Test
+all =
     describe "TestRunner.fromTest"
         [ describe "test length"
             [ fuzz2 int int "only positive tests runs are valid" <|
@@ -186,7 +180,7 @@ fromTest =
                                 |> Expect.equal
                                     (Just
                                         { given = Nothing
-                                        , description = "This test failed because it threw an exception: \"Error: TODO in module `RunnerTests` on line 180\n\ncrash\""
+                                        , description = "This test failed because it threw an exception: \"Error: TODO in module `RunnerTests` on line 174\n\ncrash\""
                                         , reason = Test.Runner.Failure.Custom
                                         }
                                     )
