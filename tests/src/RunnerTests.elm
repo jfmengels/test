@@ -60,8 +60,11 @@ fromTest =
                     case seededRunners of
                         Only runners ->
                             runners
-                                |> List.length
-                                |> Expect.equal 2
+                                |> List.map (.labels >> List.reverse)
+                                |> Expect.equal
+                                    [ [ "three tests", "two tests", "fails" ]
+                                    , [ "three tests", "two tests", "is an only" ]
+                                    ]
 
                         val ->
                             Expect.fail ("Expected SeededRunner to be Only, but was " ++ Debug.toString val)
@@ -85,8 +88,8 @@ fromTest =
                     case seededRunners of
                         Only runners ->
                             runners
-                                |> List.length
-                                |> Expect.equal 1
+                                |> List.map (.labels >> List.reverse)
+                                |> Expect.equal [ [ "three tests", "two tests", "fails" ] ]
 
                         val ->
                             Expect.fail ("Expected SeededRunner to be Only, but was " ++ Debug.toString val)
@@ -110,8 +113,8 @@ fromTest =
                     case seededRunners of
                         Skipping runners ->
                             runners
-                                |> List.length
-                                |> Expect.equal 1
+                                |> List.map (.labels >> List.reverse)
+                                |> Expect.equal [ [ "three tests", "passes" ] ]
 
                         val ->
                             Expect.fail ("Expected SeededRunner to be Skipping, but was " ++ Debug.toString val)
@@ -120,8 +123,8 @@ fromTest =
                     case toSeededRunners (Test.only <| test "passes" expectPass) of
                         Only runners ->
                             runners
-                                |> List.length
-                                |> Expect.equal 1
+                                |> List.map (.labels >> List.reverse)
+                                |> Expect.equal [ [ "passes" ] ]
 
                         val ->
                             Expect.fail ("Expected SeededRunner to be Only, but was " ++ Debug.toString val)
@@ -145,8 +148,8 @@ fromTest =
                     case seededRunners of
                         Skipping runners ->
                             runners
-                                |> List.length
-                                |> Expect.equal 1
+                                |> List.map (.labels >> List.reverse)
+                                |> Expect.equal [ [ "three tests", "passes" ] ]
 
                         val ->
                             Expect.fail ("Expected SeededRunner to be Skipping, but was " ++ Debug.toString val)
@@ -165,8 +168,8 @@ fromTest =
                     case seededRunners of
                         Skipping runners ->
                             runners
-                                |> List.length
-                                |> Expect.equal 1
+                                |> List.map (.labels >> List.reverse)
+                                |> Expect.equal [ [ "two tests", "passes" ] ]
 
                         val ->
                             Expect.fail ("Expected SeededRunner to be Skipping, but was " ++ Debug.toString val)
@@ -185,8 +188,8 @@ fromTest =
                     case toSeededRunners (test "passes" expectPass) of
                         Plain runners ->
                             runners
-                                |> List.length
-                                |> Expect.equal 1
+                                |> List.map (.labels >> List.reverse)
+                                |> Expect.equal [ [ "passes" ] ]
 
                         val ->
                             Expect.fail ("Expected SeededRunner to be Plain, but was " ++ Debug.toString val)
@@ -202,7 +205,7 @@ fromTest =
                                 |> Expect.equal
                                     (Just
                                         { given = Nothing
-                                        , description = "This test failed because it threw an exception: \"Error: TODO in module `RunnerTests` on line 196\n\ncrash\""
+                                        , description = "This test failed because it threw an exception: \"Error: TODO in module `RunnerTests` on line 199\n\ncrash\""
                                         , reason = Test.Runner.Failure.Custom
                                         }
                                     )
