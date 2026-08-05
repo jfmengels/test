@@ -43,18 +43,17 @@ fromTest =
             , test "an only inside another only has no effect" <|
                 \_ ->
                     let
-                        seededRunners =
-                            toSeededRunners <|
-                                describe "three tests"
-                                    [ test "passes" expectPass
-                                    , Test.only <|
-                                        describe "two tests"
-                                            [ test "fails" testImpl
-                                            , Test.only (test "is an only" testImpl)
-                                            ]
-                                    ]
+                        suite =
+                            describe "three tests"
+                                [ test "passes" expectPass
+                                , Test.only <|
+                                    describe "two tests"
+                                        [ test "fails" testImpl
+                                        , Test.only (test "is an only" testImpl)
+                                        ]
+                                ]
                     in
-                    case seededRunners of
+                    case toSeededRunners suite of
                         Only runners ->
                             runners
                                 |> List.map (.labels >> List.reverse)
@@ -68,18 +67,17 @@ fromTest =
             , test "a skip inside an only takes effect" <|
                 \_ ->
                     let
-                        seededRunners =
-                            toSeededRunners <|
-                                describe "three tests"
-                                    [ test "passes" expectPass
-                                    , Test.only <|
-                                        describe "two tests"
-                                            [ test "fails" testImpl
-                                            , Test.skip (test "is skipped" testImpl)
-                                            ]
-                                    ]
+                        suite =
+                            describe "three tests"
+                                [ test "passes" expectPass
+                                , Test.only <|
+                                    describe "two tests"
+                                        [ test "fails" testImpl
+                                        , Test.skip (test "is skipped" testImpl)
+                                        ]
+                                ]
                     in
-                    case seededRunners of
+                    case toSeededRunners suite of
                         Only runners ->
                             runners
                                 |> List.map (.labels >> List.reverse)
@@ -90,18 +88,17 @@ fromTest =
             , test "an only inside a skip has no effect" <|
                 \_ ->
                     let
-                        seededRunners =
-                            toSeededRunners <|
-                                describe "three tests"
-                                    [ test "passes" expectPass
-                                    , Test.skip <|
-                                        describe "two tests"
-                                            [ test "fails" testImpl
-                                            , Test.only (test "is skipped" testImpl)
-                                            ]
-                                    ]
+                        suite =
+                            describe "three tests"
+                                [ test "passes" expectPass
+                                , Test.skip <|
+                                    describe "two tests"
+                                        [ test "fails" testImpl
+                                        , Test.only (test "is skipped" testImpl)
+                                        ]
+                                ]
                     in
-                    case seededRunners of
+                    case toSeededRunners suite of
                         Skipping runners ->
                             runners
                                 |> List.map (.labels >> List.reverse)
@@ -122,18 +119,17 @@ fromTest =
             , test "a skip inside another skip has no effect" <|
                 \_ ->
                     let
-                        seededRunners =
-                            toSeededRunners <|
-                                describe "three tests"
-                                    [ test "passes" expectPass
-                                    , Test.skip <|
-                                        describe "two tests"
-                                            [ test "fails" testImpl
-                                            , Test.skip (test "is skipped" testImpl)
-                                            ]
-                                    ]
+                        suite =
+                            describe "three tests"
+                                [ test "passes" expectPass
+                                , Test.skip <|
+                                    describe "two tests"
+                                        [ test "fails" testImpl
+                                        , Test.skip (test "is skipped" testImpl)
+                                        ]
+                                ]
                     in
-                    case seededRunners of
+                    case toSeededRunners suite of
                         Skipping runners ->
                             runners
                                 |> List.map (.labels >> List.reverse)
@@ -144,14 +140,13 @@ fromTest =
             , test "a pair of tests where one uses skip is a Skipping summary" <|
                 \_ ->
                     let
-                        seededRunners =
-                            toSeededRunners <|
-                                describe "two tests"
-                                    [ test "passes" expectPass
-                                    , Test.skip (test "fails" testImpl)
-                                    ]
+                        suite =
+                            describe "two tests"
+                                [ test "passes" expectPass
+                                , Test.skip (test "fails" testImpl)
+                                ]
                     in
-                    case seededRunners of
+                    case toSeededRunners suite of
                         Skipping runners ->
                             runners
                                 |> List.map (.labels >> List.reverse)
@@ -191,7 +186,7 @@ fromTest =
                                 |> Expect.equal
                                     (Just
                                         { given = Nothing
-                                        , description = "This test failed because it threw an exception: \"Error: TODO in module `RunnerTests` on line 199\n\ncrash\""
+                                        , description = "This test failed because it threw an exception: \"Error: TODO in module `RunnerTests` on line 180\n\ncrash\""
                                         , reason = Test.Runner.Failure.Custom
                                         }
                                     )
