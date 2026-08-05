@@ -49,11 +49,8 @@ fromTest =
                                     [ test "passes" expectPass
                                     , Test.only <|
                                         describe "two tests"
-                                            [ test "fails" <|
-                                                \_ -> Expect.fail "failed on purpose"
-                                            , Test.only <|
-                                                test "is an only" <|
-                                                    \_ -> Expect.fail "failed on purpose"
+                                            [ test "fails" testImpl
+                                            , Test.only (test "is an only" testImpl)
                                             ]
                                     ]
                     in
@@ -77,11 +74,8 @@ fromTest =
                                     [ test "passes" expectPass
                                     , Test.only <|
                                         describe "two tests"
-                                            [ test "fails" <|
-                                                \_ -> Expect.fail "failed on purpose"
-                                            , Test.skip <|
-                                                test "is skipped" <|
-                                                    \_ -> Expect.fail "failed on purpose"
+                                            [ test "fails" testImpl
+                                            , Test.skip (test "is skipped" testImpl)
                                             ]
                                     ]
                     in
@@ -102,11 +96,8 @@ fromTest =
                                     [ test "passes" expectPass
                                     , Test.skip <|
                                         describe "two tests"
-                                            [ test "fails" <|
-                                                \_ -> Expect.fail "failed on purpose"
-                                            , Test.only <|
-                                                test "is skipped" <|
-                                                    \_ -> Expect.fail "failed on purpose"
+                                            [ test "fails" testImpl
+                                            , Test.only (test "is skipped" testImpl)
                                             ]
                                     ]
                     in
@@ -137,11 +128,8 @@ fromTest =
                                     [ test "passes" expectPass
                                     , Test.skip <|
                                         describe "two tests"
-                                            [ test "fails" <|
-                                                \_ -> Expect.fail "failed on purpose"
-                                            , Test.skip <|
-                                                test "is skipped" <|
-                                                    \_ -> Expect.fail "failed on purpose"
+                                            [ test "fails" testImpl
+                                            , Test.skip (test "is skipped" testImpl)
                                             ]
                                     ]
                     in
@@ -160,9 +148,7 @@ fromTest =
                             toSeededRunners <|
                                 describe "two tests"
                                     [ test "passes" expectPass
-                                    , Test.skip <|
-                                        test "fails" <|
-                                            \_ -> Expect.fail "failed on purpose"
+                                    , Test.skip (test "fails" testImpl)
                                     ]
                     in
                     case seededRunners of
@@ -222,3 +208,10 @@ fromTest =
 passing : Test
 passing =
     test "A passing test" expectPass
+
+
+{-| Dummy test implementation.
+-}
+testImpl : () -> Expect.Expectation
+testImpl () =
+    Expect.pass
